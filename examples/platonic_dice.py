@@ -7,9 +7,10 @@ from cqmore.polyhedron import tetrahedron, hexahedron, octahedron, dodecahedron,
 number_of_faces = 12 # 4, 6, 8, 12 or 20
 radius = 10
 font_name = 'Arial Black'
-font_size = 5
+font_size = 5 if number_of_faces < 20 else 3
 font_distance = 1
 detail = 0
+fillet = 0.2
 
 platonic_polyhedra = {
     4: tetrahedron, 
@@ -22,10 +23,10 @@ platonic_polyhedra = {
 dice = (Workplane()
            .polyhedron(
                *platonic_polyhedra[number_of_faces](radius, detail)
-           )
+           ).fillet(fillet)
        )
 
-faces = dice.faces().vals()
+faces = dice.faces('%PLANE').vals()
 nums = len(faces)
 texts = Workplane()
 for i in range(nums):
