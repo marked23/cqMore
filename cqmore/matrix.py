@@ -24,12 +24,13 @@ multiplications from right to left.
 """
 
 from typing import Iterable, Union, cast
-from cadquery import Vector
-import numpy
 
-from math import cos, sin, radians
+from cadquery import Vector
 
 from ._typing import Point3D
+
+from math import cos, sin, radians
+import numpy
 
 
 class Matrix3D:
@@ -179,26 +180,181 @@ def scaling(v: Union[Point3D, Vector]) -> Matrix3D:
 
 
 def translation(v: Union[Point3D, Vector]) -> Matrix3D:
+    '''
+    Create a translation matrix.
+
+    ## Parameters
+
+    - `v`: translation vector.
+
+    ## Examples 
+
+        from cqmore.matrix import scaling, translation
+        from cqmore.polyhedron import uvSphere
+        from cqmore import Workplane
+
+        sphere = uvSphere(1, widthSegments = 12, heightSegments = 6)
+
+        r1 = Workplane().polyhedron(*sphere)
+        s = scaling((2, 2, 2)) 
+        t = translation((3, 0, 0))
+
+        transformed_pts = (t @ s).transformAll(sphere.points)
+        r2 = Workplane().polyhedron(transformed_pts, sphere.faces)
+
+    '''
+
     return Matrix3D(_translation(v))
 
 
 def mirror(v: Union[Point3D, Vector]) -> Matrix3D:
+    '''
+    Create a mirror matrix.
+
+    ## Parameters
+
+    - `v`: mirror vector.
+
+    ## Examples 
+
+        from cqmore.matrix import mirror, translation
+        from cqmore.polyhedron import tetrahedron
+        from cqmore import Workplane
+
+        t = tetrahedron(1)
+
+        pts = translation((1, 0, 0)).transformAll(t.points)
+        r1 = Workplane().polyhedron(pts, t.faces)
+
+        mirrored_pts = mirror((1, 0, 0)).transformAll(pts)
+        r2 = Workplane().polyhedron(mirrored_pts, t.faces)
+
+    '''
+
     return Matrix3D(_mirror(v))
 
 
 def rotationX(angle: float) -> Matrix3D:
+    '''
+    Create a rotation matrix around the x-axis.
+
+    ## Parameters
+
+    - `angle`: angle degrees.
+
+    ## Examples 
+
+        from cqmore.matrix import translation, rotationX
+        from cqmore.polyhedron import tetrahedron
+        from cqmore import Workplane
+
+        t = tetrahedron(1)
+        pts = translation((0, 3, 0)).transformAll(t.points)
+
+        for a in range(0, 360, 30):
+            rotated_pts = rotationX(a).transformAll(pts)
+            show_object(Workplane().polyhedron(rotated_pts, t.faces))
+
+    '''
+
     return Matrix3D(_rotationX(angle))
 
 
 def rotationY(angle: float) -> Matrix3D:
+    '''
+    Create a rotation matrix around the y-axis.
+
+    ## Parameters
+
+    - `angle`: angle degrees.
+
+    ## Examples 
+
+        from cqmore.matrix import translation, rotationY
+        from cqmore.polyhedron import tetrahedron
+        from cqmore import Workplane
+
+        t = tetrahedron(1)
+
+        for i in range(20):
+            rotated_pts = (rotationY(i * 36) @ translation((3, i, 0))).transformAll(t.points)
+            show_object(Workplane().polyhedron(rotated_pts, t.faces))
+
+    '''
+
     return Matrix3D(_rotationY(angle))
 
 
 def rotationZ(angle: float) -> Matrix3D:
+    '''
+    Create a rotation matrix around the z-axis.
+
+    ## Parameters
+
+    - `angle`: angle degrees.
+
+    ## Examples 
+
+        from cqmore import Workplane
+        from cqmore.matrix import translation, rotationX, rotationZ
+        from cqmore.polyhedron import sweep
+
+        def mobius_strip(radius, frags):
+            profile = [(10, -1, 0), (10, 1, 0), (-10, 1, 0), (-10, -1, 0)]
+
+            translationX20 = translation((radius, 0, 0))
+            rotationX90 = rotationX(90)
+
+            angle_step = 360 / frags
+            profiles = []
+            for i in range(frags):
+                m = rotationZ(i * angle_step) @ translationX20 @ rotationX90 @ rotationZ(i * angle_step / 2)
+                profiles.append(m.transformAll(profile))
+
+            return Workplane().polyhedron(*sweep(profiles, closeIdx = 2))
+
+        radius = 20
+        frags = 24
+
+        strip = mobius_strip(radius, frags)
+
+    '''
+    
     return Matrix3D(_rotationZ(angle))
 
 
 def rotation(direction: Union[Point3D, Vector], angle: float) -> Matrix3D:
+    '''
+    Create a rotation matrix around the given direction.
+
+    ## Parameters
+
+    - `direction`: axis of rotation.
+    - `angle`: angle degrees.
+
+    ## Examples 
+
+        from cqmore.matrix import rotation, translation, rotationY
+        from cqmore.polyhedron import tetrahedron
+        from cqmore import Workplane
+
+        t = tetrahedron(1)
+        pts = translation((6, 6, 3)).transformAll(t.points)
+        direction = (10, 10, 10)
+
+        for a in range(0, 360, 30):
+            rotated_pts = rotation(direction, a).transformAll(pts)
+            show_object(Workplane().polyhedron(rotated_pts, t.faces))
+
+        show_object(
+            Workplane().polylineJoin(
+                [(0, 0, 0), direction], 
+                Workplane().box(.1, .1, .1)
+            )
+        )
+
+    '''
+
     return Matrix3D(_rotation(direction, angle))
 
 

@@ -1,9 +1,10 @@
-from typing import Iterable, Union, cast
+from typing import Iterable, Union, overload
 
 import cadquery
-from cadquery import Wire, Shape, Compound, Solid, Location, Vector
+from cadquery import Wire, Shape, Compound, Solid
+from cadquery.cq import T, VectorLike
 
-from ._typing import FaceIndices, MeshGrid, T, VectorLike
+from ._typing import FaceIndices, MeshGrid
 from ._solid import makePolyhedron, polylineJoin, splineApproxSurface
 from ._wire import bool2D, makePolygon, polylineJoinWire
 from .polygon import hull2D
@@ -119,8 +120,15 @@ class Workplane(cadquery.Workplane):
 
         return bool2D(self, toCut, 'cut')
 
+    @overload
+    def hull2D(self: T) -> T:
+        ...
 
-    def hull2D(self: T, points: Iterable[VectorLike] = None, forConstruction: bool = False) -> T:
+    @overload
+    def hull2D(self: T, points: Iterable[VectorLike] = ..., forConstruction: bool = ...) -> T:
+        ...
+
+    def hull2D(self: T, points = None, forConstruction = False) -> T:
         """
         Create a convex hull through the provided points.
 
@@ -238,7 +246,15 @@ class Workplane(cadquery.Workplane):
         return _solid_each_combine_clean(self, makePolyhedron(points, faces), combine, clean)
 
 
-    def hull(self: T, points: Iterable[VectorLike] = None, combine: bool = True, clean: bool = True) -> T:
+    @overload
+    def hull(self: T) -> T:
+        ...
+
+    @overload
+    def hull(self: T, points: Iterable[VectorLike] = ..., combine: bool = ..., clean: bool = ...) -> T:
+        ...
+
+    def hull(self: T, points = None, combine = True, clean = True) -> T:
         """
         Create a convex hull through the provided points. 
 
@@ -326,24 +342,6 @@ def _solid_each_combine_clean(workplane, solid, combine, clean):
     else:
         return workplane.union(all, clean=clean)
 
-
-def _pnts(workplane):
-    pnts = []
-    plane = workplane.plane
-    loc = workplane.plane.location
-
-    if len(workplane.objects) == 0:
-        # nothing on the stack. here, we'll assume we should operate with the
-        # origin as the context point
-        pnts.append(Location())
-    else:
-        for o in workplane.objects:
-            if isinstance(o, (Vector, Shape)):
-                pnts.append(loc.inverse * Location(plane, o.Center()))
-            else:
-                pnts.append(o)
-    
-    return (p for p in pnts)
 
 def extend(workplaneClz):
     """

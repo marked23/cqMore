@@ -16,11 +16,14 @@ from math import cos, sin, pi, tau
 
 from typing import Iterable, NamedTuple, Union, cast
 
-from ._util import toTuples, toVectors
-from ._typing import MeshGrid, Point3D, FaceIndices, VectorLike
 from cadquery import Vector
+from cadquery.cq import T, VectorLike
+
+from ._util import toTuples
+from ._typing import MeshGrid, Point3D, FaceIndices
 
 import numpy
+
 
 class Polyhedron(NamedTuple):
     '''
@@ -604,8 +607,7 @@ def hull(points: Iterable[VectorLike]) -> Polyhedron:
 
     ## Parameters
 
-    - `points`: a list of 3D points. If it's `None`, attempt to hull all of the items on the stack 
-                to create a convex hull.
+    - `points`: a list of 3D points. 
 
     ## Examples 
 
