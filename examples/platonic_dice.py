@@ -43,4 +43,4 @@ for i in range(nums):
 
 dice = dice.cut(texts)
 
-globals()['show_object'](dice)
+show_object(dice) # type: ignore

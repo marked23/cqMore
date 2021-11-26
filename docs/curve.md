@@ -8,7 +8,8 @@ Provide parametric equations of curves.
 --|--
 [`circle(t,radius)`](curve.md#circle) | The parametric equation of a circle. 
 [`logarithmicSpiral(t[,a,k])`](curve.md#logarithmicSpiral) | The parametric equation of a logarithmic spiral.
-[`archimed  eanSpiral(t,a,b)`](curve.md#archimedeanSpiral) | The parametric equation of a archimedeanSpiral spiral.  
+[`archimedeanSpiral(t,a,b)`](curve.md#archimedeanSpiral) | The parametric equation of a archimedean spiral.  
+[`superellipse(t,n[,a,b])`](curve.md#superellipse) | The parametric equation of a superellipse.  
 [`superformula(t,m,n1,n2,n3[,a,b])`](curve.md#superformula) | The parametric equation of a superformula.  
 
 ## 3D Functions
@@ -86,9 +87,34 @@ The parametric equation of a [archimedean spiral](https://en.wikipedia.org/wiki/
 
     spiral = (Workplane()
                 .polyline([archimedeanSpiral(t / 360, 1, 1) for t in range(360 * 5)])
-            )
+             )
 
 ![archimedeanSpiral](images/curve_archimedeanSpiral.JPG)
+
+# `superellipse`
+
+The parametric equation of a [superellipse](https://en.wikipedia.org/wiki/Superellipse).
+
+## Parameters
+
+- `t`: a parametric variable in the range 0 to 1.
+- `n`: the n parameter of the superellipse.
+- `a = 1`: the a parameter of the superellipse.
+- `b = 1`: the b parameter of the superellipse.
+
+## Examples 
+
+    from cqmore import Workplane
+    from cqmore.curve import superellipse
+
+    r1 = Workplane()
+    for i in range(3, 10):
+        r1 = (r1.center(3, 0)
+                .parametricCurve(lambda t: superellipse(t, i / 5), N = 20)
+                .extrude(1)
+             )
+
+![superellipse](images/curve_superellipse.JPG)
 
 # `superformula`
 
