@@ -93,6 +93,49 @@ def archimedeanSpiral(t: float, a: float, b: float) -> Point2D:
     return (r * cos(theta), r * sin(theta))
 
 
+def squircle(t: float, radius: float, s: float) -> Point2D:
+    '''
+    The parametric equation of a [squircle](https://en.wikipedia.org/wiki/Squircle). 
+
+    ## Parameters
+
+    - `t`: a parametric variable in the range 0 to 1.
+    - `s`: the squareness parameter in the range 0 to 1.
+
+    ## Examples 
+
+        from cqmore import Workplane
+        from cqmore.curve import squircle
+
+        r = 10
+        r1 = Workplane()
+        for i in range(0, 6):
+            r1 = (r1.center(r * 3, 0)
+                    .parametricCurve(lambda t: squircle(t, r, i / 5))
+                    .extrude(1)
+                )
+
+    '''
+
+    def zeroIfNegative(v):
+        return v if v >= 0 else 0
+
+    theta = t * tau
+
+    if s == 0:
+        return (radius * cos(theta), radius * sin(theta))
+
+    rs = 0.5 * radius / s
+    sscos2t = s ** 2 * cos(2 * theta)
+    sq2cost = s * sqrt(2) * cos(theta)
+    sq2sint = s * sqrt(2) * sin(theta)
+
+    x = rs * (sqrt(zeroIfNegative(2 + 2 * sq2cost + sscos2t)) - sqrt(zeroIfNegative(2 - 2 * sq2cost + sscos2t)))
+    y = rs * (sqrt(zeroIfNegative(2 + 2 * sq2sint - sscos2t)) - sqrt(zeroIfNegative(2 - 2 * sq2sint - sscos2t)))
+
+    return (x, y)
+
+
 def helix(t: float, radius: float, slope: float) -> Point3D:
     '''
     The parametric equation of a helix.
@@ -188,6 +231,33 @@ def torusKnot(t: float, p: int, q: int) -> Point3D:
     p_phi = p * phi
     r = cos(q_phi) + 2
     return (r * cos(p_phi), r * sin(p_phi), -sin(q_phi))
+
+
+def lemniscateGerono(t: float, a: float = 1, b: float = 1, c: float = 0) -> Point3D:
+    """
+    The parametric equation (a * sin(φ), b * sin(φ) * cos(φ) , c * cos(φ)) of a [Lemniscate of Gerono](https://en.wikipedia.org/wiki/Lemniscate_of_Gerono).
+
+    ## Parameters
+
+    - `t`: a parametric variable in the range 0 to 1.
+    - `a`: the a parameter of the Lemniscate of Gerono.
+    - `b`: the b parameter of the Lemniscate of Gerono.
+    - `c`: the c parameter of the Lemniscate of Gerono.
+
+    ## Examples 
+
+        from cqmore import Workplane
+        from cqmore.curve import lemniscateGerono
+
+        r = (Workplane()
+            .parametricCurve(lambda t: lemniscateGerono(t)))
+
+    """
+
+    phi = t * tau
+    sinp = sin(phi)
+    cosp = cos(phi)
+    return (a * sinp, b * sinp * cosp , c * cosp)
 
 
 def superellipse(t: float, n: float, a: float = 1, b: float = 1) -> Point2D:

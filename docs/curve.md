@@ -9,6 +9,7 @@ Provide parametric equations of curves.
 [`circle(t,radius)`](curve.md#circle) | The parametric equation of a circle. 
 [`logarithmicSpiral(t[,a,k])`](curve.md#logarithmicSpiral) | The parametric equation of a logarithmic spiral.
 [`archimedeanSpiral(t,a,b)`](curve.md#archimedeanSpiral) | The parametric equation of a archimedean spiral.  
+[`squircle(t,radius,s)`](curve.md#squircle) | (Preview) The parametric equation of a squircle.  
 [`superellipse(t,n[,a,b])`](curve.md#superellipse) | The parametric equation of a superellipse.  
 [`superformula(t,m,n1,n2,n3[,a,b])`](curve.md#superformula) | The parametric equation of a superformula.  
 
@@ -19,6 +20,7 @@ Provide parametric equations of curves.
 [`helix(t,radius,slope)`](curve.md#helix) | The parametric equation of a helix.
 [`sphericalSpiral(t,radius[,c])`](curve.md#sphericalSpiral) | The parametric equation of a [spherical spiral](https://en.wikipedia.org/wiki/Spiral#Spherical_spirals).
 [`torusKnot(t,p,q)`](curve.md#torusKnot) | The parametric equation of a (p,q)-torus knot.
+[`lemniscateGerono(t[,a,b,c])`](curve.md#lemniscateGerono) | (Preview) The parametric equation of a [Lemniscate of Gerono](https://en.wikipedia.org/wiki/Lemniscate_of_Gerono).
 [`parametricEquation(func[,*args,**kwargs])`](curve.md#parametricEquation) | Convert `func` into a function f(t) used by `Workplane.parametricCurve`.
 
 ----
@@ -90,6 +92,30 @@ The parametric equation of a [archimedean spiral](https://en.wikipedia.org/wiki/
              )
 
 ![archimedeanSpiral](images/curve_archimedeanSpiral.JPG)
+
+# `squircle`
+
+The parametric equation of a [squircle](https://en.wikipedia.org/wiki/Squircle). 
+
+## Parameters
+
+- `t`: a parametric variable in the range 0 to 1.
+- `s`: the squareness parameter in the range 0 to 1.
+
+## Examples 
+
+    from cqmore import Workplane
+    from cqmore.curve import squircle
+
+    r = 10
+    r1 = Workplane()
+    for i in range(0, 6):
+        r1 = (r1.center(r * 3, 0)
+                .parametricCurve(lambda t: squircle(t, r, i / 5))
+                .extrude(1)
+            )
+
+![squircle](images/curve_squircle.JPG)
 
 # `superellipse`
 
@@ -224,6 +250,27 @@ The parametric equation of a [torus knot](https://en.wikipedia.org/wiki/Torus_kn
         )
 
 ![torusKnot](images/curve_torusKnot.JPG)
+
+# `lemniscateGerono`
+
+The parametric equation (a * sin(φ), b * sin(φ) * cos(φ) , c * cos(φ)) of a [Lemniscate of Gerono](https://en.wikipedia.org/wiki/Lemniscate_of_Gerono).
+
+## Parameters
+
+- `t`: a parametric variable in the range 0 to 1.
+- `a`: the a parameter of the Lemniscate of Gerono.
+- `b`: the b parameter of the Lemniscate of Gerono.
+- `c`: the c parameter of the Lemniscate of Gerono.
+
+## Examples 
+
+    from cqmore import Workplane
+    from cqmore.curve import lemniscateGerono
+
+    r = (Workplane()
+        .parametricCurve(lambda t: lemniscateGerono(t)))
+
+![lemniscateGerono](images/curve_lemniscateGerono.JPG)
 
 # `parametricEquation`
 
